@@ -8,9 +8,9 @@ Codes and models to extract cancer biomarkers and results from pathology reports
 If you want to skip training and directly load the model to extract biomarkers and results
 
 1. Extract biomarkers: 
-```python BE/run_be.py --bert_model saved_models/BIEMP/ --do_eval --max_seq_length 128 --output_dir PATH_TO_OUTPUT --data_dir PATH_TO_DATA```
+```python BE/run_be.py --bert_model saved_models/BioBERT/ --do_eval --max_seq_length 128 --output_dir saved_models/BE/ --data_dir PATH_TO_DATA```
 
-2. Extract results:
+3. Extract results:
 ```python RI/run_ri.py --bert_model saved_models/BIEMP/ --data_dir PATH_TO_DATA --output_dir PATH_TO_OUTPUT --dropout 0.3 --learning_rate 2e-5 --num_train_epochs 2 --mode biempa --load_model --load_classification_path saved_models/BIEMPA/model/checkpoint_0/```
 ```python RI/run_ri.py --bert_model saved_models/BIEMP/ --data_dir data/RI/ --output_dir output/RI/ --dropout 0.3 --learning_rate 2e-5 --num_train_epochs 2 --mode biempa --load_model --load_classification_path saved_models/BIEMPA/model/checkpoint_0/```
 
