@@ -8,15 +8,17 @@ Codes and models to extract cancer biomarkers and results from pathology reports
 If you want to skip training and directly load the model to extract biomarkers and results
 
 1. Extract biomarkers: 
-```python BE/run_be.py --bert_model saved_models/BioBERT/ --do_eval --max_seq_length 128 --output_dir saved_models/BE/ --data_dir PATH_TO_DATA```
+```
+python BE/run_be.py --bert_model saved_models/BioBERT/ --do_eval --max_seq_length 128 --output_dir saved_models/BE/ --data_dir PATH_TO_DATA
+```
 
 3. Extract results:
-```python RI/run_ri.py --bert_model saved_models/BIEMP/ --data_dir PATH_TO_DATA --output_dir PATH_TO_OUTPUT --dropout 0.3 --learning_rate 2e-5 --num_train_epochs 2 --mode biempa --load_model --load_classification_path saved_models/BIEMPA/model/checkpoint_0/```
-```python RI/run_ri.py --bert_model saved_models/BIEMP/ --data_dir data/RI/ --output_dir output/RI/ --dropout 0.3 --learning_rate 2e-5 --num_train_epochs 2 --mode biempa --load_model --load_classification_path saved_models/BIEMPA/model/checkpoint_0/```
+```
+python RI/run_ri.py --bert_model saved_models/BIEMP/ --data_dir PATH_TO_DATA --output_dir PATH_TO_OUTPUT --dropout 0.3 --learning_rate 2e-5 --num_train_epochs 2 --mode biempa --load_model --load_classification_path saved_models/RI/BIEMPA//model/checkpoint_0/
+```
 
 ## Whole process: data preparation, training, extraction 
 If you want to go through the whole process, please follow the following steps:
-
 
 ### Biomarker Extraction
 1. Data Preparation:
@@ -24,21 +26,21 @@ If you want to go through the whole process, please follow the following steps:
    ```
    {
    '0': {'label': ['O', 'B', 'I','I','O','O'], 'sentence': ['The', 'shortness', 'of', 'breath', 'improved','.']},
-   '1': {'label': ['O', 'B', 'I','I','O','O'], 'sentence': ['The', 'shortness', 'of', 'breath', 'improved','.']},
+   '1': ...
    }
    ```
    Scripts:
-   - preprocess post-training data: `process_medmention.py`
-   - preprocess fine-tuning data: `process_be.py`
+   - preprocess post-training data: [process_medmention.py](BE/process_medmention.py)
+   - preprocess fine-tuning data: [process_be.py](BE/process_be.py)
 
 3. Post-training using Medmention dataset
    ```
    python BE/run_pt.py --bert_model PATH_TO_BIOBERT_MODEL --max_seq_length 128 --train_batch_size 16 --learning_rate 2e-5 --num_train_epochs 10 --output_dir PATH_TO_POSTTRAINED_MODEL --data_dir PATH_TO_Biomarker_Extraction_DATA
    ```
 
-4. Fine-tuning on pathology reports (`BE/run_be.sh`)
+4. Fine-tuning on pathology reports ([run_be.sh](BE/run_be.sh))
 
-5. Evaluation (`BE/eval_be.py`)
+5. Evaluation ([eval_be.py](BE/eval_be.py))
 
 ### Result Identification
 1. Data preparation:
@@ -49,7 +51,7 @@ If you want to go through the whole process, please follow the following steps:
    - polarity: the result of biomarker
    - dependency: dependency features extracted by CoreNLP
    ```
-   Script to get the dependency: `get_dep.py`
+   Script to get the dependency: [get_dep.py](RI/get_dep.py)
 
 2. Identify results
    ```
