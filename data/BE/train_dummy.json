@@ -1,0 +1,1 @@
+{"0": {"label": ["O", "B", "I","I","O","O"], "sentence": ["The", "shortness", "of", "breath", "improved","."]}, "1": {"label": ["O", "O", "O", "B", "O"], "sentence": ["The", "patient", "has", "fever", "."}]

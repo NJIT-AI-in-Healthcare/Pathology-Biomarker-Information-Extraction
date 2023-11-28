@@ -1,0 +1,2 @@
+,s_id,unit,biomarker,polarity,dependency
+0, 0, This is a sample sentence in pathology report containing biomarker A with result positive, biomarker A, 1, dependency extracted from CoreNLP
