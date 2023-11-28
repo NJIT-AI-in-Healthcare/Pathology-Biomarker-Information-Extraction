@@ -22,7 +22,7 @@ If you want to go through the whole process, please follow the following steps:
 
 ### Biomarker Extraction
 1. Data Preparation:
-   The input data format of post-training and fine-tuning: `{sentence_index: {'label': BIO format, 'sentence': list of words}}`
+   The input data format of post-training and fine-tuning: `{sentence_index: {'label': BIO format, 'sentence': list of words}}`. The sample dummy data can be found here: [train_dummy.json](data/BE/train_dummy.json).
    ```
    {
    '0': {'label': ['O', 'B', 'I','I','O','O'], 'sentence': ['The', 'shortness', 'of', 'breath', 'improved','.']},
@@ -51,9 +51,10 @@ If you want to go through the whole process, please follow the following steps:
    - polarity: the result of biomarker
    - dependency: dependency features extracted by CoreNLP
    ```
-   Script to get the dependency: [get_dep.py](RI/get_dep.py)
+   Script to get the dependency: [get_dep.py](RI/get_dep.py).
+   The sample dummy data can be found here: [data_dummy.csv](data/RI/data_dummy.csv).
 
-2. Identify results
+3. Identify results
    ```
    # train
    python RI/run_ri.py --bert_model PATH_TO_POSTTRAINED_MODEL --data_dir PATH_TO_Result_Identification_DATA --output_dir PATH_TO_OUTPUT_FOLDER --dropout 0.3 --learning_rate 5e-5 --num_train_epochs 2 --mode biempa
@@ -62,6 +63,8 @@ If you want to go through the whole process, please follow the following steps:
    python RI/run_ri.py --bert_model PATH_TO_POSTTRAINED_MODEL --data_dir PATH_TO_Result_Identification_DATA --output_dir PATH_TO_OUTPUT_FOLDER --dropout 0.3 --learning_rate 5e-5 --num_train_epochs 2 --mode biempa --load_model --load_classification_path
    PATH_TO_THE_SAVED_MODEL
    ```
+### Models
+The trained models can be downloaded here: [models](https://drive.google.com/file/d/1am1d5NWwD59DOFFD9qkEe5Z_f7phqLZ4/view?usp=sharing)
 
 ### Built With
 * [pytorch](https://pytorch.org/)
@@ -71,4 +74,5 @@ If you want to go through the whole process, please follow the following steps:
 * [numpy](https://numpy.org/)
 * [nltk](https://www.nltk.org/)
 * [seqeval](https://pypi.org/project/seqeval/0.0.10/)
+
 
