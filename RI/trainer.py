@@ -132,7 +132,7 @@ def train(args, train_dataloader, model,val_data_loader):
 
 def cross_val(args, train_dataset, model):
     collate_fn = get_collate_fn(args)
-    re=get_train_test_id(train_dataset)
+    re=get_train_test_id(args,train_dataset)
 
     all_test_acc, all_test_f1,all_test_precision,all_test_recall,all_test_f1_2 = [], [],[],[],[]
     for fid in range(args.cross_val_fold):
@@ -144,8 +144,8 @@ def cross_val(args, train_dataset, model):
         
         train_dataloader = DataLoader(trainset, batch_size=args.train_batch_size,collate_fn=collate_fn, shuffle=True)
         val_dataloader = DataLoader(valset, batch_size=args.eval_batch_size,collate_fn=collate_fn, shuffle=False)
-        record_train_test_id(val_dataloader,fid)
-        print('done')
+        # record_train_test_id(val_dataloader,fid)
+        # print('done')
         
         
         # train_data_loader = DataLoader(dataset=trainset, batch_size=self.opt.batch_size, shuffle=True)
@@ -154,7 +154,7 @@ def cross_val(args, train_dataset, model):
             best_model_path = args.load_classification_path+'model.pth'
         else:
 
-            checkpoint = torch.load(args.bert_model_dir+'pytorch_model.bin', map_location=args.device)
+            checkpoint = torch.load(args.bert_model+'pytorch_model.bin', map_location=args.device)
             model.bert.load_state_dict(checkpoint,strict=False)
 
             best_model_path = train(args, train_dataloader, model,val_dataloader)
@@ -172,8 +172,21 @@ def cross_val(args, train_dataset, model):
     mean_test_acc, mean_test_f1, mean_test_precision, mean_test_recall, mean_test_f1_2 = np.mean(all_test_acc), np.mean(all_test_f1), np.mean(all_test_precision), np.mean(all_test_recall), np.mean(all_test_f1_2)
     logger.info('>' * 100)
     logger.info('>>> mean_test_acc: {:.4f}, mean_test_f1: {:.4f}, mean_test_precision: {:.4f}, mean_test_recall: {:.4f}, mean_test_f1_2: {:.4f}'.format(mean_test_acc, mean_test_f1, mean_test_precision, mean_test_recall, mean_test_f1_2))
-def get_train_test_id(trainset):
-    folder_name = '../data/RI/10fold/'
+def eval_only(args, dataset,model):
+    collate_fn = get_collate_fn(args)
+    all_test_acc, all_test_f1,all_test_precision,all_test_recall,all_test_f1_2 = [], [],[],[],[]
+    val_dataloader = DataLoader(dataset, batch_size=args.eval_batch_size,collate_fn=collate_fn, shuffle=False)
+    test_acc, test_f1,test_all_results = _evaluate_acc_f1(args,model,val_dataloader)
+    all_test_acc.append(test_acc)
+    all_test_f1.append(test_f1)
+    all_test_precision.append(test_all_results[0])
+    all_test_recall.append(test_all_results[1])
+    all_test_f1_2.append(test_all_results[2])
+    logger.info('>> test_acc: {:.4f}, test_f1: {:.4f},test_precision: {:.4f}, test_recall: {:.4f}, test_f1_2: {:.4f}'.format(test_acc, test_f1, test_all_results[0], test_all_results[1], test_all_results[2]))
+
+def get_train_test_id(args,trainset):
+    # folder_name = '../data/RI/10fold/'
+    folder_name = args.data_dir + '/10fold/'
     re=[]
 
     j_l=[0,2,4,6,8]
@@ -198,13 +211,16 @@ def _evaluate_acc_f1(args,model,data_loader):
     t_targets_all, t_outputs_all = None, None
     # switch model to evaluation mode
     model.eval()
+    out = []
     with torch.no_grad():
         for i_batch, t_batch in enumerate(data_loader):
             t_inputs, t_targets, s_id = get_input_from_batch(args, t_batch)
             t_outputs = model(**t_inputs)
+            # print('t_outputs',t_outputs)
 
             # n_correct += (torch.argmax(t_outputs, -1) == torch.argmax(t_targets, -1)).sum().item()
             n_correct += (torch.argmax(t_outputs, -1) == t_targets).sum().item()
+            out.append(torch.argmax(t_outputs, -1) == t_targets)
             n_total += len(t_outputs)
 
             if t_targets_all is None:
@@ -215,6 +231,7 @@ def _evaluate_acc_f1(args,model,data_loader):
                 t_outputs_all = torch.cat((t_outputs_all, t_outputs), dim=0)
 
     acc = n_correct / n_total
+    # print('out',out)
     # f1 = metrics.f1_score(torch.argmax(t_targets_all, -1).cpu(), torch.argmax(t_outputs_all, -1).cpu(), average='macro')
     f1 = metrics.f1_score(t_targets_all.cpu(), torch.argmax(t_outputs_all, -1).cpu(), average='macro')
     # print(t_targets_all.cpu())

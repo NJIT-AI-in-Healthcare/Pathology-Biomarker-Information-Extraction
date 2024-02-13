@@ -9,13 +9,14 @@ import numpy as np
 import torch
 from transformers import (BertConfig, BertForTokenClassification,
                                   BertTokenizer)
-# from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader
 
 from datasets import load_datasets_and_vocabs_mimic
-from model import result_identification, pure_bert
+from model import result_identification, pure_bert, result_identification_reverse
 # from model_new_ablation import MIMIC_Bert_GAT_init,MIMIC_Bert_Only
 
-from trainer import cross_val
+from trainer import cross_val,eval_only
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ def set_seed(args):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset_folder', type=str,
+    parser.add_argument('--data_dir', type=str,
                         default='biomarker_data/dependency/',
                         help='data folder.')
     parser.add_argument('--output_dir', type=str, default='output/mimic_1/',
@@ -39,7 +40,7 @@ def parse_args():
                         help='Choose which GPUs to run')
     parser.add_argument('--seed', type=int, default=2019,
                         help='random seed for initialization')
-    parser.add_argument('--bert_model_dir', type=str, default='../clinicalBERT-master/model/pretraining/',
+    parser.add_argument('--bert_model', type=str, default='../clinicalBERT-master/model/pretraining/',
                         help='Path to pre-trained Bert model.')
     parser.add_argument('--dropout', type=float, default=0,
                         help='Dropout rate for embedding.')
@@ -99,17 +100,26 @@ def main():
     if args.load_model:
         tokenizer = BertTokenizer.from_pretrained(args.load_classification_path)
     else:
-        tokenizer = BertTokenizer.from_pretrained(args.bert_model_dir)
+        tokenizer = BertTokenizer.from_pretrained(args.bert_model)
     args.tokenizer = tokenizer
 
     train_dataset, word_vocab, dep_tag_vocab, pos_tag_vocab = load_datasets_and_vocabs_mimic(args)
     if args.mode == 'bert':
-        model = pure_bert(args)
+            model = pure_bert(args)
     else:
+        # model =result_identification(args, 2, 4)
         model =result_identification(args, dep_tag_vocab['len'], pos_tag_vocab['len'])
+        # model =result_identification_reverse(args, dep_tag_vocab['len'], pos_tag_vocab['len'])
     model.to(args.device)
-    cross_val(args, train_dataset, model)
+    if args.load_model:
+        checkpoint = torch.load(args.load_classification_path+'model.pth', map_location=args.device)
+        model.load_state_dict(checkpoint['model_state_dict'],strict=False)
+        eval_only(args, train_dataset, model)
+    else:
+        cross_val(args, train_dataset, model)
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    print("--- %s seconds ---" % (time.time() - start_time))

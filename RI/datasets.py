@@ -310,6 +310,7 @@ def build_pos_tag_vocab(data, vocab_size=1000, min_freq=1):
 
 def load_datasets_and_vocabs_mimic(args):
     train = pd.read_csv(args.data_dir + 'data.csv')
+    # train = train[2936:2942]
     # test = pd.read_csv(args.dataset_folder + 'test.csv')
 
     train_processed, train_flatten = get_rolled_and_unrolled_data_mimic_new(train, args)
