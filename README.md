@@ -14,7 +14,7 @@ python BE/run_be.py --bert_model saved_models/BioBERT/ --do_eval --max_seq_lengt
 
 3. Extract results:
 ```
-python RI/run_ri.py --bert_model saved_models/BIEMP/ --data_dir PATH_TO_DATA --output_dir PATH_TO_OUTPUT --dropout 0.3 --learning_rate 2e-5 --num_train_epochs 2 --mode biempa --load_model --load_classification_path saved_models/RI/BIEMPA//model/checkpoint_0/
+python RI/run.py --bert_model saved_models/BIEMP/ --data_dir PATH_TO_DATA --output_dir PATH_TO_OUTPUT --dropout 0.3 --learning_rate 2e-5 --num_train_epochs 2 --mode biempa --load_model --load_classification_path saved_models/RI/BIEMPA//model/checkpoint_0/
 ```
 
 ## Whole process: data preparation, training, extraction 
@@ -57,10 +57,10 @@ If you want to go through the whole process, please follow the following steps:
 3. Identify results
    ```
    # train
-   python RI/run_ri.py --bert_model PATH_TO_POSTTRAINED_MODEL --data_dir PATH_TO_Result_Identification_DATA --output_dir PATH_TO_OUTPUT_FOLDER --dropout 0.3 --learning_rate 5e-5 --num_train_epochs 2 --mode biempa
+   python RI/run.py --bert_model PATH_TO_POSTTRAINED_MODEL --data_dir PATH_TO_Result_Identification_DATA --output_dir PATH_TO_OUTPUT_FOLDER --dropout 0.3 --learning_rate 2e-5 --num_train_epochs 2 --mode biempa
 
    # load model
-   python RI/run_ri.py --bert_model PATH_TO_POSTTRAINED_MODEL --data_dir PATH_TO_Result_Identification_DATA --output_dir PATH_TO_OUTPUT_FOLDER --dropout 0.3 --learning_rate 5e-5 --num_train_epochs 2 --mode biempa --load_model --load_classification_path
+   python RI/run.py --bert_model PATH_TO_POSTTRAINED_MODEL --data_dir PATH_TO_Result_Identification_DATA --output_dir PATH_TO_OUTPUT_FOLDER --dropout 0.3 --learning_rate 2e-5 --num_train_epochs 2 --mode biempa --load_model --load_classification_path
    PATH_TO_THE_SAVED_MODEL
    ```
 ### Models
