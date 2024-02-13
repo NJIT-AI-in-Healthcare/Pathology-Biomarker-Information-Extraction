@@ -27,7 +27,7 @@ def punctuation(s):
 
 # extract and format documents and corresponding medical terms
 # medmention dataset
-f = open("corpus_pubtator.txt", "r")
+f = open("../data/BE/corpus_pubtator.txt", "r", encoding="utf8")
 save_mt = defaultdict(list)
 docs = []
 doc_ids = []
@@ -105,7 +105,7 @@ for i,doc_id in enumerate(doc_ids):
 				new_sent.append(sent.split()[tok_i])
 		out[str(global_i)] = {'label': new_tag, 'sentence': new_sent}
 		global_i += 1
-json.dump(out, open('medmention.json', 'w' ) )
+json.dump(out, open('../data/BE/medmention.json', 'w' ) )
 
 
 

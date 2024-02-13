@@ -110,6 +110,10 @@ class AeProcessor(DataProcessor):
         """See base class."""
         return self._create_examples(
             self._read_json(os.path.join(data_dir, fn)), "test")
+    def get_pt_examples(self, data_dir, fn="medmention.json"):
+        """See base class."""
+        return self._create_examples(
+            self._read_json(os.path.join(data_dir, fn)), "pt")
 
     def get_labels(self):
         """See base class."""

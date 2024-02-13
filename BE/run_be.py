@@ -21,6 +21,7 @@ from absa_data_utils import ABSATokenizer
 # import modelconfig
 from transformers import AdamW
 from tqdm import tqdm
+import time
 
 # logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
 #                     datefmt = '%m/%d/%Y %H:%M:%S',
@@ -336,4 +337,6 @@ def main():
         test(args)
             
 if __name__=="__main__":
+    start_time = time.time()
     main()
+    print("--- %s seconds ---" % (time.time() - start_time))

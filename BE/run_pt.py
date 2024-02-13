@@ -16,6 +16,7 @@ from pytorch_pretrained_bert import BertTokenizer, BertModel, BertAdam
 import absa_data_utils as data_utils
 from absa_data_utils import ABSATokenizer
 from tqdm import tqdm
+import time
 
 # logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
 #                     datefmt = '%m/%d/%Y %H:%M:%S',
@@ -78,6 +79,8 @@ def parse_args():
                         type=int,
                         default=1,
                         help="random seed for initialization")
+    parser.add_argument('--cuda_id', type=str, default='cuda',
+                        help='Choose which GPUs to run')
     return parser.parse_args()
 
 
@@ -103,7 +106,7 @@ def train(args):
     processor = data_utils.AeProcessor()
     label_list = processor.get_labels()
     tokenizer = ABSATokenizer.from_pretrained(args.bert_model)
-    train_examples = processor.get_train_examples(args.data_dir)
+    train_examples = processor.get_pt_examples(args.data_dir)
     num_train_steps = int(len(train_examples) / args.train_batch_size) * args.num_train_epochs
     print('num_train_steps',num_train_steps,len(train_examples))
 
@@ -173,4 +176,6 @@ def main():
     train(args)
 
 if __name__=="__main__":
+    start_time = time.time()
     main()
+    print("--- %s seconds ---" % (time.time() - start_time))
