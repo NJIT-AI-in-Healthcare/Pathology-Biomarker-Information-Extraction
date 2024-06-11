@@ -393,9 +393,12 @@ class MIMIC_Depparsed_Dataset(Dataset):
             _word_current = 0
             sentence_indexer = []
 
+            pre = 0
+            temp_token = []
+
             for s in sentences.sents:
                 temp_indexer = []
-                temp_token = []
+                
                 words = []
                 for word in s:
                     word = word.text
@@ -415,7 +418,7 @@ class MIMIC_Depparsed_Dataset(Dataset):
                     _word_current = _word_current + len(word_tokens)
                     if len(store_token_idx) > self.max_seq_length - 2:
                         break
-                sentence_indexer.append(temp_indexer)
+                sentence_indexer.extend(temp_indexer)
 
             store_token_idx = store_token_idx[:self.max_seq_length - 2]
 
@@ -481,11 +484,17 @@ class MIMIC_Depparsed_Dataset(Dataset):
             fact['label'] = int(row['polarity'])+1
             fact['s_id'] = row['s_id']
 
+            # print('sent_idx',sent_idx)
+
+            # print("fact['dep_tag_ids']",fact['dep_tag_ids'])
+            # print("fact['pos_tag_ids']",fact['pos_tag_ids'])
+
             new_dep_tag = []
             new_pos_tag = []
             new_dep_dist = []
             cur_idx = 0
-            for word_idx, token_idx in enumerate(sentence_indexer[0]):
+            # print('sentence_indexer',len(sentence_indexer), len(fact['dep_tag_ids']),len(sentence_indexer)==len(fact['dep_tag_ids']))
+            for word_idx, token_idx in enumerate(sentence_indexer):
                 while cur_idx < token_idx:
                     new_dep_tag.append(fact['dep_tag_ids'][word_idx - 1])
                     new_pos_tag.append(fact['pos_tag_ids'][word_idx - 1])
@@ -497,13 +506,24 @@ class MIMIC_Depparsed_Dataset(Dataset):
                 new_dep_dist.append(fact['dep_dist'][word_idx])
                 cur_idx += 1
             cur_sent_len = len(input_ids)-2
+            # print('new_dep_tag',new_dep_tag)
+            # print('new_pos_tag',new_pos_tag)
             while len(new_dep_tag) < cur_sent_len:
                 new_dep_tag.append(new_dep_tag[-1])
                 new_pos_tag.append(new_pos_tag[-1])
-                new_dep_dist.append(new_dep_dist[-1])
-            fact['dep_tag_ids'] = new_dep_tag
-            fact['pos_tag_ids'] = new_pos_tag
-            fact['dep_dist'] = new_dep_dist
+                new_dep_dist.append(new_dep_dist[-1])  
+            # print('sentence_indexer',sentence_indexer)
+            # print('input_ids',input_ids)
+            # print("fact['dep_tag_ids']",fact['dep_tag_ids'])
+            # print('new_dep_tag',new_dep_tag)
+            # print(len(input_ids) == len(new_dep_tag)+2)
+            # print('check',len(fact['dep_tag_ids']), len(new_dep_tag),len(fact['dep_tag_ids']) == len(new_dep_tag))
+            fact['dep_tag_ids'] = new_dep_tag[:len(input_ids)-2]
+            fact['pos_tag_ids'] = new_pos_tag[:len(input_ids)-2]
+            fact['dep_dist'] = new_dep_dist[:len(input_ids)-2]
+            # print(len(input_ids),len(fact['dep_tag_ids'])+2)
+            assert len(input_ids) == len(fact['dep_tag_ids'])+2
+
 
 
             out.append(fact)
